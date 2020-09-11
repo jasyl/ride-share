@@ -105,49 +105,46 @@ DRIVER_ID = {
 # Step 4: Total Driver's Earnings and Number of Rides
 
 # Use an iteration blocks to print the following answers:
-#
-def get_sum(symbol, profile)
-    sum = profile.sum { |hash| hash[symbol] }
-  return sum
+
+### METHODS ###
+
+# sum up values that correspond to a specified key in an array of hashes.
+def get_sum(key, array_of_hashes)
+  array_of_hashes.sum { |hash| hash[key] }
 end
 
-def get_average(symbol, profile)
-  sum = get_sum(symbol, profile)
-  avg = ((sum % profile.length == 0 ? sum : sum.to_f) / profile.length).round(1)
+# returns the average value of the numbers that correspond to a key in an array of hashes.
+def get_average(key, array_of_hashes)
+  length = array_of_hashes.length
+  sum = get_sum(key, array_of_hashes)
+  avg = ((sum % length == 0 ? sum : sum.to_f) / length).round(1)
   return avg
 end
 
-def collect_info(symbol)
-  result = []
-  DRIVER.ID.each do |id, profile|
-    result << [id,  ]
-  end
-end
+
 # - the number of rides each driver has given
 DRIVER_ID.each do |id, profile|
   puts "#{id} gave #{profile.length} rides"
 end
 
 # - the total amount of money each driver has made
-save_totals_for_each_driver(:COST).each do |sub_array|
-  puts "#{sub_array[0]} made a total of $#{sub_array[1]}"
+DRIVER_ID.each do |id, profile|
+  sum = get_sum(:COST, profile)
+  puts "#{id} made a total of $#{sum}"
 end
 
 # - the average rating for each driver
 DRIVER_ID.each do |id, profile|
-  sum = profile.sum {|hash| hash[:RATING]}
-  avg = ((sum % profile.length == 0 ? sum : sum.to_f) / profile.length).round(1)
+  avg = get_average(:RATING, profile)
   puts "#{id} has an average rating of #{avg} stars"
 end
 
 # - Which driver made the most money?
-most_money = save_totals(:COST).max_by do |each_driver|
-  each_driver[1]
-end
-puts "#{most_money[0]} made the most money at $#{most_money[1]}"
+highest_earner = DRIVER_ID.map { |id, profile| [id, get_sum(:COST, profile)]}.max_by { |each_driver| each_driver[1] }
+puts "#{highest_earner[0]} made the most money at $#{highest_earner[1]}"
 
 # - Which driver has the highest average rating?
-highest_rating = save_totals(:RATING).max_by do |each_driver|
-  each_driver[1]
-end
-puts "#{highest_rating[0]} has the highest average rating with #{highest_rating[1]} stars"
+highest_rated = DRIVER_ID.map { |id, profile| [id, get_average(:RATING, profile)]}.max_by { |each_driver| each_driver[1] }
+puts "#{highest_rated[0]} has the highest rating at #{highest_rated[1]} stars"
+
+
