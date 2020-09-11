@@ -3,15 +3,32 @@
 
 # In this section of the file, as a series of comments,
 # create a list of the layers you identify.
+# Layer 1 => Drivers
+# Layer 2 => All the trips each driver has taken
+# Layer 3 => Each trip info
+
 # Which layers are nested in each other?
+# Layer 3, Each trip a driver makes is nested within all the trips that the driver has made
+# All the trips that a driver has made is correlated to the driver ID
+
 # Which layers of data "have" within it a different layer?
+# Layer 1, Within the Drivers' IDs are all the trips that a driver has made.
+# Layer 2, the total trips each driver has made have each individual trip saved within it.
+
 # Which layers are "next" to each other?
+# Each Driver ID (key) is next to each other or parallel within the hash.
+# Each trip (hash) a specific Driver has made is saved parallel in an array (the value of the Driver_ID)
+# Within each trip (hash), COST, RATING, RIDER_ID, and DATE are saved next to each other.
+
 
 ########################################################
 # Step 2: Assign a data structure to each layer
 
 # Copy your list from above, and in this section
 # determine what data structure each layer should have
+# Layer 1 => Drivers (hash)
+# Layer 2 => Each Driver's Info (array)
+# Layer 3 => Each Trip Info (hash)
 
 ########################################################
 # Step 3: Make the data structure!
