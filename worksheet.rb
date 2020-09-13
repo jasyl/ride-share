@@ -138,76 +138,68 @@ def get_average(key, array_of_hashes)
   return avg
 end
 
-# prints out the name of the driver and the number of rides they gave
-def get_num_of_rides
-  DRIVER_ID.each do |driver, trips|
-    puts "#{driver} gave #{trips.length} rides"
-  end
-end
-
-# prints out the driver and total amount each driver made
-def get_total_earnings
-  DRIVER_ID.each do |driver, trips|
-    sum = get_sum(:COST, trips)
-    puts "#{driver} earned a total of $#{sum}"
-  end
-end
-
-# prints out the driver and their avg rating
-def get_avg_rating
-  DRIVER_ID.each do |driver, trips|
-    avg = get_average(:RATING, trips)
-    puts "#{driver} has an average rating of #{avg} stars"
-  end
-end
-
-# prints out the driver who made the most and their earnings
-def get_highest_earner
-  earnings = DRIVER_ID.map { |driver, trips| {driver: driver, sum: get_sum(:COST, trips)}}
-  highest_earner = earnings.max_by { |driver_and_sum_hash| driver_and_sum_hash[:sum] }
-  puts "#{highest_earner[:driver]} earned the most money with $#{highest_earner[:sum]}"
-end
-
-# prints out the driver who has the highest average rating
-def get_highest_avg_rating
-  avg_ratings = DRIVER_ID.map { |driver, trips| {driver: driver, rating: get_average(:RATING, trips)}}
-  highest_rated = avg_ratings.max_by { |driver_and_rating_hash| driver_and_rating_hash[:rating] }
-  puts "#{highest_rated[:driver]} has the highest rating at #{highest_rated[:rating]} stars"
-end
-
-### RESULTS ###
-
-# - the number of rides each driver has given
-get_num_of_rides
-puts
-
-# - the total amount of money each driver has made
-get_total_earnings
-puts
-
-# - the average rating for each driver
-get_avg_rating
-puts
-
-# - Which driver made the most money?
-get_highest_earner
-puts
-
-# - Which driver has the highest average rating?
-get_highest_avg_rating
-
-# - For each driver, on which day did they make the most money?
-DRIVER_ID.each do |driver, trips|
+# get date & amount that driver earned the most
+# This method won't work if dates aren't chronological per driver
+def get_day_of_highest_earnings(trips)
   total_earnings = {}
   trips.each do |trip|
-    if total_earnings.key?(trip[:DATE])
+    if total_earnings.has_value?(trip[:DATE])
       total_earnings[:amount] += trip[:COST]
     elsif total_earnings.empty? || trip[:COST] > total_earnings[:amount]
       total_earnings = {date: trip[:DATE], amount: trip[:COST]}
     end
   end
-  puts "#{driver} earned the most on #{total_earnings[:date]} with $#{total_earnings[:amount]}"
+  return total_earnings
 end
+
+# prints out the drivers' information
+def get_each_drivers_info
+  DRIVER_ID.each do |driver, trips|
+    rating = get_average(:RATING, trips)
+    sum = get_sum(:COST, trips)
+    num_of_trips = trips.length
+    date_of_highest_earnings = get_day_of_highest_earnings(trips)
+    puts "\n#{driver} had #{num_of_trips} trips, earned a total of $#{sum}, and has an average rating of #{rating} stars."
+    puts "They earned the most on #{date_of_highest_earnings[:date]} with $#{date_of_highest_earnings[:amount]}."
+  end
+end
+
+# return the hash with the max value
+def get_highest_value(array_of_hash, key)
+  return array_of_hash.max_by { |driver_and_rating_hash| driver_and_rating_hash[key] }
+end
+
+# prints out the driver who made the most and their earnings
+def get_highest_earner
+  earnings = DRIVER_ID.map { |driver, trips| {driver: driver, earnings: get_sum(:COST, trips)}}
+  highest_earner = get_highest_value(earnings, :earnings)
+  puts "\n#{highest_earner[:driver]} earned the most money overall with $#{highest_earner[:earnings]}"
+end
+
+# prints out the driver who has the highest average rating
+def get_highest_avg_rating
+  avg_ratings = DRIVER_ID.map { |driver, trips| {driver: driver, rating: get_average(:RATING, trips)}}
+  highest_rated = get_highest_value(avg_ratings, :rating)
+  puts "\n#{highest_rated[:driver]} has the highest overall rating at #{highest_rated[:rating]} stars"
+end
+
+### RESULTS ###
+
+# - the number of rides each driver has given
+# - the total amount of money each driver has made
+# - the average rating for each driver
+# - For each driver, on which day did they make the most money?
+get_each_drivers_info
+
+# - Which driver made the most money?
+get_highest_earner
+
+# - Which driver has the highest average rating?
+get_highest_avg_rating
+
+
+
+
 
 
 
