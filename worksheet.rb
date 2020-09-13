@@ -27,8 +27,8 @@
 # Copy your list from above, and in this section
 # determine what data structure each layer should have
 # Layer 1 => Drivers (hash)
-# Layer 2 => Each Driver's Info (array)
-# Layer 3 => Each Trip Info (hash)
+# Layer 2 => All the trips each driver has taken (array)
+# Layer 3 => Each trip info (hash)
 
 ########################################################
 # Step 3: Make the data structure!
@@ -118,7 +118,7 @@ DRIVER_ID = {
 }
 
 
-########################################################
+###########################################
 # Step 4: Total Driver's Earnings and Number of Rides
 
 # Use an iteration blocks to print the following answers:
@@ -138,30 +138,76 @@ def get_average(key, array_of_hashes)
   return avg
 end
 
+# prints out the name of the driver and the number of rides they gave
+def get_num_of_rides
+  DRIVER_ID.each do |driver, trips|
+    puts "#{driver} gave #{trips.length} rides"
+  end
+end
+
+# prints out the driver and total amount each driver made
+def get_total_earnings
+  DRIVER_ID.each do |driver, trips|
+    sum = get_sum(:COST, trips)
+    puts "#{driver} earned a total of $#{sum}"
+  end
+end
+
+# prints out the driver and their avg rating
+def get_avg_rating
+  DRIVER_ID.each do |driver, trips|
+    avg = get_average(:RATING, trips)
+    puts "#{driver} has an average rating of #{avg} stars"
+  end
+end
+
+# prints out the driver who made the most and their earnings
+def get_highest_earner
+  earnings = DRIVER_ID.map { |driver, trips| {driver: driver, sum: get_sum(:COST, trips)}}
+  highest_earner = earnings.max_by { |driver_and_sum_hash| driver_and_sum_hash[:sum] }
+  puts "#{highest_earner[:driver]} earned the most money with $#{highest_earner[:sum]}"
+end
+
+# prints out the driver who has the highest average rating
+def get_highest_avg_rating
+  avg_ratings = DRIVER_ID.map { |driver, trips| {driver: driver, rating: get_average(:RATING, trips)}}
+  highest_rated = avg_ratings.max_by { |driver_and_rating_hash| driver_and_rating_hash[:rating] }
+  puts "#{highest_rated[:driver]} has the highest rating at #{highest_rated[:rating]} stars"
+end
+
+### RESULTS ###
 
 # - the number of rides each driver has given
-DRIVER_ID.each do |id, profile|
-  puts "#{id} gave #{profile.length} rides"
-end
+get_num_of_rides
+puts
 
 # - the total amount of money each driver has made
-DRIVER_ID.each do |id, profile|
-  sum = get_sum(:COST, profile)
-  puts "#{id} made a total of $#{sum}"
-end
+get_total_earnings
+puts
 
 # - the average rating for each driver
-DRIVER_ID.each do |id, profile|
-  avg = get_average(:RATING, profile)
-  puts "#{id} has an average rating of #{avg} stars"
-end
+get_avg_rating
+puts
 
 # - Which driver made the most money?
-highest_earner = DRIVER_ID.map { |id, profile| [id, get_sum(:COST, profile)]}.max_by { |each_driver| each_driver[1] }
-puts "#{highest_earner[0]} made the most money at $#{highest_earner[1]}"
+get_highest_earner
+puts
 
 # - Which driver has the highest average rating?
-highest_rated = DRIVER_ID.map { |id, profile| [id, get_average(:RATING, profile)]}.max_by { |each_driver| each_driver[1] }
-puts "#{highest_rated[0]} has the highest rating at #{highest_rated[1]} stars"
+get_highest_avg_rating
+
+# - For each driver, on which day did they make the most money?
+DRIVER_ID.each do |driver, trips|
+  total_earnings = {}
+  trips.each do |trip|
+    if total_earnings.key?(trip[:DATE])
+      total_earnings[:amount] += trip[:COST]
+    elsif total_earnings.empty? || trip[:COST] > total_earnings[:amount]
+      total_earnings = {date: trip[:DATE], amount: trip[:COST]}
+    end
+  end
+  puts "#{driver} earned the most on #{total_earnings[:date]} with $#{total_earnings[:amount]}"
+end
+
 
 
