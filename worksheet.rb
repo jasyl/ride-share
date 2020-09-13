@@ -159,7 +159,7 @@ def get_each_drivers_info
     sum = get_sum(:COST, trips)
     num_of_trips = trips.length
     date_of_highest_earnings = get_day_of_highest_earnings(trips)
-    puts "\n#{driver} had #{num_of_trips} trips, earned a total of $#{sum}, and has an average rating of #{rating} stars."
+    puts "\n#{driver} made #{num_of_trips} trips, earned a total of $#{sum}, and has an average rating of #{rating} stars."
     puts "They earned the most on #{date_of_highest_earnings[:date]} with $#{date_of_highest_earnings[:amount]}."
   end
 end
